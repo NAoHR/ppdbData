@@ -11,42 +11,54 @@ class ParseData:
         return [item for item in self.jsonedData if item["yearType"] == yearType]
 
     def mainProccess(self,yearType="all"):
-        def parseEachData(id,returnedList):
+        def parseEachData(id,yearType):
             try:
                 getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
-                print(getSchool)
+                try:
+                    getSchoolName = requests.get(f"{getSchool}{id}",timeout=3)
+                    jsoned = getSchoolName.json()
+                    print(jsoned[0][3][6][3])
+                    return jsoned[0][3][6][3]
+                except Exception as e:
+                    print("Errror")
+                    return "Error, cant retrified data"
             except KeyboardInterrupt:
-                return 0
+                raise("Stopped")
 
         def parseGivenList(list):
             try:
-                allStudentId = {}
+                tobeReturned = {}
                 if list:
                     for school in list:
-                        print(f"==== proccessing {school['yearType']} ====")
-                        allStudentId[school["yearType"]] = "pending"
-                        toAllStudentIDSchool = []
+                        print(f"proccessing {school['yearType']} ====")
+                        tobeReturned[school["yearType"]] = "pending"
+                        eachVocType = []
                         for apiData in school["sourceDataLink"]:
+                            print()
+                            print(f"Begin {apiData['vocType']}  ====")
                             try:
                                 r = requests.get(apiData["api"],timeout=3)
                                 students = r.json()
-                                toAllStudentIDSchool.append({
-                                    apiData["vocType"] : [item[3] for item in students["data"]]
+                                studentSchool = []
+                                for student in students["data"]:
+                                    studentSchool.append(parseEachData(student[3],school["yearType"]))
+                                eachVocType.append({
+                                    apiData["vocType"] : studentSchool
                                 })
-                                print(f"{apiData['vocType']}\t\tDone")
+                                studentSchool = []
                             except Exception as e:
-                                toAllStudentIDSchool.append({
+                                eachVocType.append({
                                     apiData["vocType"] : "Error"
                                 })
                                 print(f"{apiData['vocType']}\t\tFailed")
-                        allStudentId[school["yearType"]] = toAllStudentIDSchool
-                        toAllStudentIDSchool = []
+                
+                        tobeReturned[school["yearType"]] = eachVocType
+                        eachVocType = []
                         print()
-                    print(allStudentId)
-                    return 1
+                    return tobeReturned
                 return False
             except KeyboardInterrupt:
-                return False
+                raise("Stopped")
 
         dataToBeRequested = self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
         return parseGivenList(dataToBeRequested)
@@ -54,4 +66,5 @@ class ParseData:
 
 
 begin = ParseData(allData)
-begin.mainProccess("current")
+finalData = begin.mainProccess("all")
+print(finalData)
