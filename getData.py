@@ -8,7 +8,7 @@ class ParseData:
         self.jsonedData = jsonedData
 
     def getData(self,yearType):
-        return [item for item in self.jsonedData if item["yearType"] == yearType]
+        return self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
 
     def mainProccess(self,yearType="all"):
         def parseEachData(id,yearType):
@@ -66,5 +66,6 @@ class ParseData:
 
 
 begin = ParseData(allData)
-finalData = begin.mainProccess("all")
-print(finalData)
+# finalData = begin.mainProccess("all")
+print(begin.getData("all"))
+# print(finalData)
