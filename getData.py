@@ -10,20 +10,21 @@ class ParseData:
     def getData(self,yearType):
         return self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
 
-    def mainProccess(self,yearType="all"):
-        def parseEachData(id,yearType):
+    def parseEachData(self,id,yearType):
+        try:
+            getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
             try:
-                getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
-                try:
-                    getSchoolName = requests.get(f"{getSchool}{id}",timeout=3)
-                    jsoned = getSchoolName.json()
-                    print(jsoned[0][3][6][3])
-                    return jsoned[0][3][6][3]
-                except Exception as e:
-                    print("Errror")
-                    return "Error, cant retrified data"
-            except KeyboardInterrupt:
-                raise("Stopped")
+                getSchoolName = requests.get(f"{getSchool}{id}",timeout=3)
+                jsoned = getSchoolName.json()
+                print(jsoned[0][3][6][3])
+                return jsoned[0][3][6][3]
+            except Exception as e:
+                print("Error, Cant retrify the data")
+                return "Error, cant retrified data"
+        except KeyboardInterrupt:
+            raise("Stopped")
+
+    def mainProccess(self,yearType="all"):
 
         def parseGivenList(list):
             try:
@@ -41,7 +42,7 @@ class ParseData:
                                 students = r.json()
                                 studentSchool = []
                                 for student in students["data"]:
-                                    studentSchool.append(parseEachData(student[3],school["yearType"]))
+                                    studentSchool.append(self.parseEachData(student[3],school["yearType"]))
                                 eachVocType.append({
                                     apiData["vocType"] : studentSchool
                                 })
@@ -65,7 +66,7 @@ class ParseData:
 
 
 
-begin = ParseData(allData)
-# finalData = begin.mainProccess("all")
-print(begin.getData("all"))
-# print(finalData)
+if __name__ == "__main__":
+    begin = ParseData(allData)
+    finalData = begin.mainProccess("all")
+    print(finalData)
