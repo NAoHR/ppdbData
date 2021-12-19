@@ -13,13 +13,26 @@ class ParseData:
     def parseEachData(self,id,yearType):
         try:
             getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
+            headers = {
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Connection": "keep-alive",
+                "Host": "arsip.siap-ppdb.com",
+                "Referer": "https://arsip.siap-ppdb.com/2020/jakarta/",
+                "Sec-Fetch-Dest": "empty",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-GPC": "1",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+            }
             try:
-                getSchoolName = requests.get(f"{getSchool}{id}",timeout=3)
+                getSchoolName = requests.get(f"{getSchool}{id}",timeout=3) if yearType == "current" else requests.get(f"{getSchool}{id}",timeout=3,headers=headers)
                 jsoned = getSchoolName.json()
-                print(jsoned[0][3][6][3])
+                print(f"[✓] {id} : {jsoned[0][3][6][3]}")
                 return jsoned[0][3][6][3]
             except Exception as e:
-                print("Error, Cant retrify the data")
+                print(f"[x] {id} : Error,Cant retrify data")
                 return "Error, cant retrified data"
         except KeyboardInterrupt:
             raise("Stopped")
@@ -68,5 +81,5 @@ class ParseData:
 
 if __name__ == "__main__":
     begin = ParseData(allData)
-    finalData = begin.mainProccess("all")
+    finalData = begin.mainProccess("2020")
     print(finalData)
