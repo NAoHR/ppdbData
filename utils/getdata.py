@@ -47,7 +47,7 @@ class ParseData:
                 tobeReturned = {}
                 if list:
                     for school in list:
-                        print(f"[?] proccessing {school['yearType']} data")
+                        print(f"[?] processing {school['yearType']} data")
                         tobeReturned[school["yearType"]] = "pending"
                         eachVocType = []
                         for apiData in school["sourceDataLink"]:
@@ -77,9 +77,9 @@ class ParseData:
                 raise("Stopped")
         
         start = time.time()
-        print(f"[!] Proccess started at {time.ctime(start)}")
+        print(f"[!] Process started at {time.ctime(start)}")
         dataToBeRequested = self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
         proccesData = parseGivenList(dataToBeRequested)
         end = time.time()
-        print(f"[!] Proccess ended at {time.ctime(end)} and took {end-start} ms")
+        print(f"[!] Process ended at {time.ctime(end)} and took {end-start} ms")
         return proccesData

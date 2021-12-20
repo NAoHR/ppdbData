@@ -44,7 +44,7 @@ How To Use:
                 print(errMessage)
                 return "jhs" if wantToCheck == "-t" else "current"
         except ValueError:
-            errMessage = f"[x] you didnt specify any {wantToCheck} option,now you are using {'current' if wantToCheck == '-y' else 'jhs'} as a defailt value"
+            errMessage = f"[x] you didnt specify any {wantToCheck} option,now you are using {'current' if wantToCheck == '-y' else 'jhs'} as a default value"
             print(errMessage)
             return "jhs" if wantToCheck == "-t" else "current"
     def validateArgv(self):
