@@ -32,7 +32,7 @@ class ParseData:
                 getSchoolName = requests.get(f"{getSchool}{id}",timeout=3) if yearType == "current" else requests.get(f"{getSchool}{id}",timeout=3,headers=headers)
                 jsoned = getSchoolName.json()
                 school = jsoned[0][3][6][3]
-                print(f"[✓] {id} : {school.split(', ')[0]}")
+                print(f"[✓] {id} : {school}")
                 return jsoned[0][3][6][3]
             except Exception as e:
                 print(f"[x] {id} : Error,Cant retrify data")
@@ -89,4 +89,5 @@ class ParseData:
 
 if __name__ == "__main__":
     begin = ParseData(allData)
-    finalData = begin.mainProccess("all")
+    finalData = begin.mainProccess("current")
+    print(finalData)
