@@ -1,3 +1,8 @@
+# HOW TO CREATE YOUR OWN DATA
+# yearType -> to classify what kind of data you want to execute (current yoear or below it)
+# sourceDataLink -> to store all of the api you are going to use
+    # api -> fill this with a valid ppdb api link,go to ppdb website find your school,go to network and find the api that the website has requested to
+    # vocType -> vocational type or wha kind of major this data filled with,either ipa,ips,kgsp,etc...
 allData = [
     {
         "yearType" : "current",

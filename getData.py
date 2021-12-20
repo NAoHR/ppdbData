@@ -1,15 +1,17 @@
 import requests
 from data import allData
-
+import time
 
 
 class ParseData:
     def __init__(self,jsonedData):
         self.jsonedData = jsonedData
-
+    # get a certain data on data.py file based on argument you type
     def getData(self,yearType):
         return self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
 
+    # this method allow you to parse ppdb data based of a given list id with yeartype classification.
+    # at first i thought ppdb stored all their data,but no,you can only get detail of a student in range only current year and a year before it
     def parseEachData(self,id,yearType):
         try:
             getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
@@ -24,12 +26,13 @@ class ParseData:
                 "Sec-Fetch-Mode": "cors",
                 "Sec-Fetch-Site": "same-origin",
                 "Sec-GPC": "1",
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36" # add your own userAgent
             }
             try:
                 getSchoolName = requests.get(f"{getSchool}{id}",timeout=3) if yearType == "current" else requests.get(f"{getSchool}{id}",timeout=3,headers=headers)
                 jsoned = getSchoolName.json()
-                print(f"[✓] {id} : {jsoned[0][3][6][3]}")
+                school = jsoned[0][3][6][3]
+                print(f"[✓] {id} : {school.split(', ')[0]}")
                 return jsoned[0][3][6][3]
             except Exception as e:
                 print(f"[x] {id} : Error,Cant retrify data")
@@ -37,6 +40,7 @@ class ParseData:
         except KeyboardInterrupt:
             raise("Stopped")
 
+    # this is a main method to execute the data and return a list which contain all the needed data
     def mainProccess(self,yearType="all"):
 
         def parseGivenList(list):
@@ -44,12 +48,11 @@ class ParseData:
                 tobeReturned = {}
                 if list:
                     for school in list:
-                        print(f"proccessing {school['yearType']} ====")
+                        print(f"[?] proccessing {school['yearType']} data")
                         tobeReturned[school["yearType"]] = "pending"
                         eachVocType = []
                         for apiData in school["sourceDataLink"]:
-                            print()
-                            print(f"Begin {apiData['vocType']}  ====")
+                            print(f"[?] Begin {apiData['vocType']}")
                             try:
                                 r = requests.get(apiData["api"],timeout=3)
                                 students = r.json()
@@ -73,13 +76,17 @@ class ParseData:
                 return False
             except KeyboardInterrupt:
                 raise("Stopped")
-
+        
+        start = time.time()
+        print(f"[!] Proccess started at {time.ctime(start)}")
         dataToBeRequested = self.jsonedData if yearType == "all" else [item for item in self.jsonedData if item["yearType"] == yearType]
-        return parseGivenList(dataToBeRequested)
+        proccesData = parseGivenList(dataToBeRequested)
+        end = time.time()
+        print(f"[!] Proccess ended at {time.ctime(end)} and took {end-start} ms")
+        return proccesData
 
 
 
 if __name__ == "__main__":
     begin = ParseData(allData)
-    finalData = begin.mainProccess("2020")
-    print(finalData)
+    finalData = begin.mainProccess("all")
