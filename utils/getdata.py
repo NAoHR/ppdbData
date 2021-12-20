@@ -89,5 +89,4 @@ class ParseData:
 
 if __name__ == "__main__":
     begin = ParseData(allData)
-    finalData = begin.mainProccess("current")
-    print(finalData)
+    finalData = begin.mainProccess("all")
