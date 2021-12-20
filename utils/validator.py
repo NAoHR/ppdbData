@@ -4,7 +4,15 @@ class ValidateInput():
         self.dataList = dataList
     
     def propperUse(self):
-        print("data aint propper")
+        print("""
+How To Use:
+
+> -y : to specify the year you want to use on this programm
+> -t : to specify what kind of type you want to parse, ex: jhs,gender
+> -h : help
+> python3 -f <your json file> -y <yeartype> -t <type>
+        """)
+        return 1
 
     def validateFile(self,fileName):
         splitted = fileName.split(".")[-1]
@@ -42,19 +50,22 @@ class ValidateInput():
             self.propperUse()
             return 0
         else:
-            if(self.dataList[1] == "-f" and len(self.dataList) >= 3):
-                toBeReturned = {
-                    "data" : False,
-                    "year" : False,
-                    "type" : False
-                }
-                fileCheck = self.validateFile(self.dataList[2])
-                if fileCheck == False:
-                    return False
-                toBeReturned["data"] = fileCheck
-                toBeReturned["year"] = self.validateOtherTag("-y",[item["yearType"] for item in toBeReturned["data"]])
-                toBeReturned["type"] = self.validateOtherTag("-t",["jhs","gender"])
-                return toBeReturned
+            if len(self.dataList) == 2 and self.dataList[1] == "-f":
+                return self.propperUse()
             else:
-                self.propperUse()
-                return 0
+                if(self.dataList[1] == "-f" and len(self.dataList) >= 3):
+                    toBeReturned = {
+                        "data" : False,
+                        "year" : False,
+                        "type" : False
+                    }
+                    fileCheck = self.validateFile(self.dataList[2])
+                    if fileCheck == False:
+                        return False
+                    toBeReturned["data"] = fileCheck
+                    toBeReturned["year"] = self.validateOtherTag("-y",[item["yearType"] for item in toBeReturned["data"]])
+                    toBeReturned["type"] = self.validateOtherTag("-t",["jhs","gender"])
+                    return toBeReturned
+                else:
+                    self.propperUse()
+                    return 0
