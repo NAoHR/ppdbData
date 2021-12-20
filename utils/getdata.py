@@ -1,5 +1,4 @@
 import requests
-from data import allData
 import time
 
 
@@ -84,9 +83,3 @@ class ParseData:
         end = time.time()
         print(f"[!] Proccess ended at {time.ctime(end)} and took {end-start} ms")
         return proccesData
-
-
-
-if __name__ == "__main__":
-    begin = ParseData(allData)
-    finalData = begin.mainProccess("all")
