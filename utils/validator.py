@@ -12,7 +12,7 @@ How To Use:
 > -h : help
 > python3 -f <your json file> -y <yeartype> -t <type>
         """)
-        return 1
+        return False
 
     def validateFile(self,fileName):
         splitted = fileName.split(".")[-1]
@@ -40,12 +40,10 @@ How To Use:
             else:
                 if self.dataList[ind+1] in validType:
                     return self.dataList[ind+1]
-                errMessage = f"[x] value you chose didn't pass any {'yeartype' if wantToCheck == '-y' else 'type'}, now using a default value ,{'all' if wantToCheck == '-y' else 'jhs'}"
-                print(errMessage)
-                return "jhs" if wantToCheck == "-t" else "current"
+                return False
         except ValueError:
-            errMessage = f"[x] you didnt specify any {wantToCheck} option,now you are using {'current' if wantToCheck == '-y' else 'jhs'} as a default value"
-            print(errMessage)
+            # errMessage = f"[x] you didnt specify any {wantToCheck} option,now you are using {'current' if wantToCheck == '-y' else 'jhs'} as a default value"
+            # print(errMessage)
             return "jhs" if wantToCheck == "-t" else "current"
     def validateArgv(self):
         if len(self.dataList) == 1 :
@@ -64,10 +62,18 @@ How To Use:
                     fileCheck = self.validateFile(self.dataList[2])
                     if fileCheck == False:
                         return False
-                    toBeReturned["data"] = fileCheck
-                    toBeReturned["year"] = self.validateOtherTag("-y",[item["yearType"] for item in toBeReturned["data"]])
-                    toBeReturned["type"] = self.validateOtherTag("-t",["jhs","gender"])
-                    return toBeReturned
+                    else:
+                        toBeReturned["data"] = fileCheck
+                        tagYCheck = self.validateOtherTag("-y",[item["yearType"] for item in toBeReturned["data"]])
+                        tagTCheck = self.validateOtherTag("-t",["jhs","gender"])
+                        if tagYCheck == False and tagTCheck == False:
+                            print("[x] your argument on -y and -t option didnt pass any on list")
+                            return False
+                        elif tagYCheck != False and tagTCheck != False:
+                            return toBeReturned
+                        errM = f"[x] your argument on {'-y' if tagYCheck == False and tagTCheck != False else '-t'} option didnt pass any on list"
+                        print(errM)
+                        return False
                 else:
                     self.propperUse()
                     return 0
