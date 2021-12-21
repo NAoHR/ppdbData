@@ -11,7 +11,7 @@ class ParseData:
 
     # this method allow you to parse ppdb data based of a given list id with yeartype classification.
     # at first i thought ppdb stored all their data,but no,you can only get detail of a student in range only current year and a year before it
-    def parseEachData(self,id,yearType):
+    def parseEachData(self,id,yearType,typeTosearch):
         try:
             getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
             headers = {
@@ -30,9 +30,9 @@ class ParseData:
             try:
                 getSchoolName = requests.get(f"{getSchool}{id}",timeout=3) if yearType == "current" else requests.get(f"{getSchool}{id}",timeout=3,headers=headers)
                 jsoned = getSchoolName.json()
-                school = jsoned[0][3][6][3]
+                school = jsoned[0][3][6][3] if typeTosearch == "jhs" else jsoned[0][3][3][3]
                 print(f"[✓] {id} : {school}")
-                return jsoned[0][3][6][3]
+                return school
             except Exception as e:
                 print(f"[x] {id} : Error,Cant retrify data")
                 return "Error, cant retrified data"
@@ -40,14 +40,14 @@ class ParseData:
             raise("Stopped")
 
     # this is a main method to execute the data and return a list which contain all the needed data
-    def mainProccess(self,yearType="all"):
+    def mainProccess(self,yearType="all",searchType="jhs"):
 
         def parseGivenList(list):
             try:
                 tobeReturned = {}
                 if list:
                     for school in list:
-                        print(f"[?] processing {school['yearType']} data")
+                        print(f"\n[?] processing {school['yearType']} data\n")
                         tobeReturned[school["yearType"]] = "pending"
                         eachVocType = []
                         for apiData in school["sourceDataLink"]:
@@ -57,7 +57,7 @@ class ParseData:
                                 students = r.json()
                                 studentSchool = []
                                 for student in students["data"]:
-                                    studentSchool.append(self.parseEachData(student[3],school["yearType"]))
+                                    studentSchool.append(self.parseEachData(student[3],school["yearType"],searchType))
                                 eachVocType.append({
                                     apiData["vocType"] : studentSchool
                                 })
