@@ -38,6 +38,7 @@ How To Use:
                     print("[x] you didn't specify data type,now using the default value 'jhs' ")
                 return "jhs" if wantToCheck == "-t" else "current"
             else:
+                validType.append("all") if wantToCheck == "-y" else None
                 if self.dataList[ind+1] in validType:
                     return self.dataList[ind+1]
                 return False
@@ -70,6 +71,8 @@ How To Use:
                             print("[x] your argument on -y and -t option didnt pass any on list")
                             return False
                         elif tagYCheck != False and tagTCheck != False:
+                            toBeReturned["year"] = tagYCheck
+                            toBeReturned["type"] = tagTCheck
                             return toBeReturned
                         errM = f"[x] your argument on {'-y' if tagYCheck == False and tagTCheck != False else '-t'} option didnt pass any on list"
                         print(errM)
