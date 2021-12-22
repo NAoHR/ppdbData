@@ -43,9 +43,7 @@ How To Use:
                     return self.dataList[ind+1]
                 return False
         except ValueError:
-            # errMessage = f"[x] you didnt specify any {wantToCheck} option,now you are using {'current' if wantToCheck == '-y' else 'jhs'} as a default value"
-            # print(errMessage)
-            return "jhs" if wantToCheck == "-t" else "current"
+            return True
     def validateArgv(self):
         if len(self.dataList) == 1 :
             self.propperUse()
@@ -71,8 +69,13 @@ How To Use:
                             print("[x] your argument on -y and -t option didnt pass any on list")
                             return False
                         elif tagYCheck != False and tagTCheck != False:
-                            toBeReturned["year"] = tagYCheck
-                            toBeReturned["type"] = tagTCheck
+                            print(tagTCheck,tagYCheck)
+                            toBeReturned["year"] = "current" if tagYCheck == True else tagYCheck
+                            toBeReturned["type"] = "jhs" if tagTCheck == True else tagTCheck
+                            if tagYCheck == True:
+                                print("[!] you didnt specify any -y option,now you are using current as a default value")
+                            if tagTCheck == True:
+                                print("[!] you didnt specify any -t option,now you are using jhs as a default value")
                             return toBeReturned
                         errM = f"[x] your argument on {'-y' if tagYCheck == False and tagTCheck != False else '-t'} option didnt pass any on list"
                         print(errM)
