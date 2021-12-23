@@ -59,7 +59,8 @@ class ParseData:
                                 for student in students["data"]:
                                     studentSchool.append(self.parseEachData(student[3],school["yearType"],searchType))
                                 eachVocType.append({
-                                    apiData["vocType"] : studentSchool
+                                    "dataName" : apiData["vocType"],
+                                    "data" : studentSchool
                                 })
                                 studentSchool = []
                             except Exception as e:
