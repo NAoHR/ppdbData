@@ -14,6 +14,5 @@ if __name__ == "__main__":
         print()
         parseData = ParseData(data["data"])
         returned = parseData.mainProccess(data["year"],data["type"])
-        print(returned)
-
+        parseData.writeJsonedFile(returned)
     
