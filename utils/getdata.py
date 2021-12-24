@@ -1,6 +1,6 @@
 import requests
 import time
-
+import json
 
 class ParseData:
     def __init__(self,jsonedData):
@@ -13,6 +13,7 @@ class ParseData:
     # at first i thought ppdb stored all their data,but no,you can only get detail of a student in range only current year and a year before it
     def parseEachData(self,id,yearType,typeTosearch):
         try:
+            yearType = "current" if yearType == "testing" else yearType #for testing only
             getSchool = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
             headers = {
                 "Accept": "application/json, text/plain, */*",
@@ -40,6 +41,10 @@ class ParseData:
             raise("Stopped")
 
     # this is a main method to execute the data and return a list which contain all the needed data
+    def writeJsonedFile(self,jsonFile,num=1):
+        print(jsonFile)
+        return 1
+
     def mainProccess(self,yearType="all",searchType="jhs"):
 
         def parseGivenList(list):
