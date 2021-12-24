@@ -1,4 +1,4 @@
-from utils.getdata import ParseData
+from utils.onlyOneType import ParseData
 from utils.validator import ValidateInput
 import sys
 
