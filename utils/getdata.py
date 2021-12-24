@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+import os
 
 class ParseData:
     def __init__(self,jsonedData):
@@ -40,18 +41,31 @@ class ParseData:
         except KeyboardInterrupt:
             raise("Stopped")
 
+    def createFolder(self,fileName,num):
+        folderName = f"{fileName}_{num}"
+        print(f"[!] creating {folderName}")
+        if os.path.exists(folderName) == False:
+            os.mkdir(folderName)
+            print(f"[!] successfully created {folderName}")
+            return folderName
+        else:
+            print(f"[x] {folderName} already taken")
+            return self.createFolder(fileName,num+1)
+
     def writeJsonedFile(self,jsonFile,num=1):
         print()
+        folderName = self.createFolder("output",0)
         print("[!] begin to create each file")
         neededKeys = [item for item in jsonFile.keys()]
         for item in neededKeys:
+            print()
             print(f"[!] begin creating {item}.json")
             mergedEachJson = {}
             for subitem in jsonFile[item]:
                 jsonKey = f"{subitem['dataName']}-{item}"
                 print(f"[!] adding {jsonKey} to {item}.json")
                 mergedEachJson[jsonKey] = subitem["data"]
-            with open(f"{item}.json","w") as f:
+            with open(f"{folderName}/{item}.json","w") as f:
                 jsonObj = json.dumps(mergedEachJson,indent=4)
                 f.write(jsonObj)
                 f.close()
@@ -83,7 +97,8 @@ class ParseData:
                                 studentSchool = []
                             except Exception as e:
                                 eachVocType.append({
-                                    apiData["vocType"] : "Error"
+                                    "dataName" : apiData["vocType"],
+                                    "data" : "error"
                                 })
                                 print(f"{apiData['vocType']}\t\tFailed")
                 
