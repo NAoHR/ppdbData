@@ -40,9 +40,22 @@ class ParseData:
         except KeyboardInterrupt:
             raise("Stopped")
 
-    # this is a main method to execute the data and return a list which contain all the needed data
     def writeJsonedFile(self,jsonFile,num=1):
-        print(jsonFile)
+        print()
+        print("[!] begin to create each file")
+        neededKeys = [item for item in jsonFile.keys()]
+        for item in neededKeys:
+            print(f"[!] begin creating {item}.json")
+            mergedEachJson = {}
+            for subitem in jsonFile[item]:
+                jsonKey = f"{subitem['dataName']}-{item}"
+                print(f"[!] adding {jsonKey} to {item}.json")
+                mergedEachJson[jsonKey] = subitem["data"]
+            with open(f"{item}.json","w") as f:
+                jsonObj = json.dumps(mergedEachJson,indent=4)
+                f.write(jsonObj)
+                f.close()
+            mergedEachJson = {}
         return 1
 
     def mainProccess(self,yearType="all",searchType="jhs"):
