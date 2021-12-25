@@ -6,4 +6,4 @@ with open("data.json","r") as file:
     file.close()
 
 mDs = MakeDataSet(data)
-print(mDs.makeReqToApi("testing"))
+print(mDs.make("testing"))
