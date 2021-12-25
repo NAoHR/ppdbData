@@ -4,18 +4,34 @@ import os
 class MakeDataSet:
     def __init__(self,data):
         self.data = data
-
+    # proccess data to folder
+    def makeEachJsonFile(self,data,folderName):
+        print("[!] begin to create each json file")
+        for item in data:
+            if item["data"]:
+                for subitem in item["data"]:
+                    jsonFile = {
+                        "name" : subitem["name"],
+                        "gender" : subitem["gender"],
+                        "school" : subitem["school"]
+                    }
+                    dumpJson = json.dumps(jsonFile,indent=4)
+                    fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
+                    with open(f"{folderName}/{fileName}","w") as jsonedFile:
+                        jsonedFile.write(dumpJson)
+                        print(f"[✓] {fileName} successfully created")
+                        jsonedFile.close()
     def makeFolder(self,name,num):
-        print()
         folderName = f"{name}_{num}"
         print(f"[!] begin creting folder {folderName}")
         if os.path.exists(folderName):
-            print()
+            print(f"[x] {folderName} already taken")
             return self.makeFolder(name,num+1)
         os.mkdir(folderName)
         print(f"[✓] successfully created folder {folderName}")
         return folderName
 
+    # make Data from requested API
     def eachDataHandler(self,studentList,yearType,vocType):
         yearType = "current" if yearType == "testing" else yearType #for testing only
         apiLink = "https://api.siap-ppdb.com/cari?no_daftar=" if yearType == "current" else f"https://arsip.siap-ppdb.com/{yearType}/api/cari?no_daftar="
@@ -48,11 +64,12 @@ class MakeDataSet:
                 subDataBucket["name"].append(nameData)
                 subDataBucket["gender"].append(genderData)
                 subDataBucket["school"].append(schoolData)
-                print(f"[✓] {studentId} done")
+                print(f"[✓] {studentId}\t\tDone")
             except Exception as e:
                 subDataBucket["name"].append(None)
                 subDataBucket["gender"].append(None)
                 subDataBucket["school"].append(None)
+                print(f"[x] {studentId}\t\tFailed")
         return subDataBucket
 
 
@@ -73,7 +90,7 @@ class MakeDataSet:
                         eachDataBucket = self.eachDataHandler([item[3] for item in jsoned["data"]],item["yearType"],subitem["vocType"])
                         afterAlleachBucket["data"].append(eachDataBucket)
                     except Exception as e:
-                        print(e)
+                        afterAlleachBucket["data"] = False
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -87,6 +104,7 @@ class MakeDataSet:
                 makeFolder = str(input("[?] begin to make dataset (y/n) :"))
                 if makeFolder.lower() == "y":
                     fdName = self.makeFolder("outputDataSet",0)
+                    self.makeEachJsonFile(tobeReturned,fdName)
                     return True
                 return False
             return False
