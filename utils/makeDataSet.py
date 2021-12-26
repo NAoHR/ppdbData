@@ -11,6 +11,7 @@ class MakeDataSet:
             if item["data"]:
                 for subitem in item["data"]:
                     jsonFile = {
+                        "id" : subitem["id"],
                         "name" : subitem["name"],
                         "gender" : subitem["gender"],
                         "school" : subitem["school"]
@@ -23,7 +24,7 @@ class MakeDataSet:
                         jsonedFile.close()
     def makeFolder(self,name,num):
         folderName = f"{name}_{num}"
-        print(f"[!] begin creting folder {folderName}")
+        print(f"[!] begin creating folder {folderName}")
         if os.path.exists(folderName):
             print(f"[x] {folderName} already taken")
             return self.makeFolder(name,num+1)
@@ -50,11 +51,13 @@ class MakeDataSet:
         }
         subDataBucket = {
             "vocType" :vocType,
+            "id" : [],
             "name" : [],
             "gender" : [],
             "school" : []
         }
         for studentId in studentList:
+            subDataBucket["id"].append(studentId)
             try:
                 req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{id}",timeout=3,headers=headers)
                 jsoned = req.json()
@@ -99,11 +102,12 @@ class MakeDataSet:
 
     def make(self,arg):
         try:
-            tobeReturned = self.makeReqToApi("testing")
+            tobeReturned = self.makeReqToApi(arg)
             if tobeReturned != False:
                 makeFolder = str(input("[?] begin to make dataset (y/n) :"))
                 if makeFolder.lower() == "y":
                     fdName = self.makeFolder("outputDataSet",0)
+                    print()
                     self.makeEachJsonFile(tobeReturned,fdName)
                     return True
                 return False
