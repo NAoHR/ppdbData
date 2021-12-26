@@ -59,7 +59,7 @@ class MakeDataSet:
         for studentId in studentList:
             subDataBucket["id"].append(studentId)
             try:
-                req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{id}",timeout=3,headers=headers)
+                req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{studentId}",timeout=3,headers=headers)
                 jsoned = req.json()
                 nameData = jsoned[0][3][2][-1]
                 genderData = jsoned[0][3][3][-2]
