@@ -6,4 +6,4 @@ with open("data.json","r") as file:
     file.close()
 
 mDs = MakeDataSet(data)
-print(mDs.make("testing"))
+mDs.make("2020")
