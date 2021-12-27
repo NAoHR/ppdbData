@@ -4,6 +4,21 @@ import os
 class MakeDataSet:
     def __init__(self,data):
         self.data = data
+        self.logError = {
+            "errorVoc" : [],
+            "errorId" : []
+        }
+        # 
+        # errorVoc format => {
+        #   "yearType" : ___
+        #   "vocType" : ___
+        # }
+
+        # errorId format => {
+        #   "id" : ___
+        #   "yearType" : ___
+        #   "vocType" : ___
+        # }
     # proccess data to folder
     def makeEachVocFolder(self,bfFolder,yearType,num):
         folderName = f"{bfFolder}/{yearType}_{num}" if num != 0 else f"{bfFolder}/{yearType}"
@@ -87,6 +102,11 @@ class MakeDataSet:
                 subDataBucket["school"].append(schoolData)
                 print(f"[✓] {studentId}\t\tDone")
             except Exception as e:
+                self.logError["errorId"].append({
+                    "id" : studentId,
+                    "yearType" : yearType,
+                    "vocType" : vocType
+                })
                 subDataBucket["name"].append(None)
                 subDataBucket["gender"].append(None)
                 subDataBucket["school"].append(None)
@@ -117,6 +137,10 @@ class MakeDataSet:
                             "vocType" : subitem["vocType"],
                             "error" : True
                         })
+                        self.logError["errorVoc"].append({
+                            "yearType" : item["yearType"],
+                            "vocType" : subitem["vocType"]
+                        })
                         print(f"[x] Failed to fetch {subitem['vocType']}\n")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
@@ -127,8 +151,9 @@ class MakeDataSet:
     def make(self,arg):
         try:
             tobeReturned = self.makeReqToApi(arg)
+            self.logger()
             if tobeReturned != False:
-                makeFolderMain = str(input("[?] begin to make dataset (y/n) :"))
+                makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
                     counterFailed = 0
                     for item in tobeReturned:
@@ -145,3 +170,18 @@ class MakeDataSet:
             return False
         except KeyboardInterrupt:
             print("[x] Adios")
+
+    # getter
+    def logger(self):
+        if self.logError["errorVoc"] or self.logError["errorId"]:
+            print("\n\n\n")
+            print("[x] Error Data log")
+            if self.logError["errorVoc"]:
+                for item in self.logError["errorVoc"]:
+                    print(f"[~] Can't Fetch {item['vocType']} in {item['yearType']} Data")
+            elif self.logError["errorId"]:
+                for itemid in self.logError["errorId"]:
+                    print(f"Cant Fetch {itemid['vocType']}'s {itemid['id']} in {itemid['yearType']} Data")
+            print("\n\n\n")
+        else:
+            print("[✓] No Log To Be Displayed")
