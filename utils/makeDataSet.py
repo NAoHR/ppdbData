@@ -5,10 +5,21 @@ class MakeDataSet:
     def __init__(self,data):
         self.data = data
     # proccess data to folder
+    def makeEachVocFolder(self,bfFolder,yearType,num):
+        folderName = f"{bfFolder}/{yearType}_{num}" if num != 0 else f"{bfFolder}/{yearType}"
+        print(f"[!] begin to create folder {folderName}")
+        if os.path.exists(folderName):
+            print(f"[x] {folderName} already taken")
+            return self.makeEachVocFolder(bfFolder,yearType,num+1)
+        os.mkdir(folderName)
+        print(f"[✓] successfully created folder {folderName}")
+        return folderName
+    
     def makeEachJsonFile(self,data,folderName):
         print("[!] begin to create each json file")
         for item in data:
             if item["data"]:
+                folderYearPath = self.makeEachVocFolder(folderName,item["typeYear"],0)
                 for subitem in item["data"]:
                     jsonFile = {
                         "id" : subitem["id"],
@@ -18,7 +29,7 @@ class MakeDataSet:
                     }
                     dumpJson = json.dumps(jsonFile,indent=4)
                     fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
-                    with open(f"{folderName}/{fileName}","w") as jsonedFile:
+                    with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
                         jsonedFile.write(dumpJson)
                         print(f"[✓] {fileName} successfully created")
                         jsonedFile.close()
@@ -103,7 +114,6 @@ class MakeDataSet:
     def make(self,arg):
         try:
             tobeReturned = self.makeReqToApi(arg)
-            print(tobeReturned)
             if tobeReturned != False:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) :"))
                 if makeFolderMain.lower() == "y":
