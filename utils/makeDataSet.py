@@ -46,7 +46,6 @@ class MakeDataSet:
                         }
                         dumpJson = json.dumps(jsonFile,indent=4)
                         fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
-                        print("here")
                         with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
                             jsonedFile.write(dumpJson)
                             print(f"[✓] {fileName} successfully created")
