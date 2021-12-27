@@ -96,6 +96,7 @@ class MakeDataSet:
                     "typeYear" : item["yearType"],
                     "data" : []
                 }
+                print()
                 print(f"[!] proccessing {item['yearType']}")
                 for subitem in item["sourceDataLink"]:
                     try:
@@ -105,6 +106,7 @@ class MakeDataSet:
                         afterAlleachBucket["data"].append(eachDataBucket)
                     except Exception as e:
                         afterAlleachBucket["data"] = False
+                        print(f"[x] Failed to fetch {subitem['vocType']}")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -117,7 +119,15 @@ class MakeDataSet:
             if tobeReturned != False:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) :"))
                 if makeFolderMain.lower() == "y":
+                    counterFailed = 0
+                    for item in tobeReturned:
+                        if item["data"] == False:
+                            counterFailed +=1
+                    if counterFailed == len(tobeReturned):
+                        print("[x] can't create data. All of connections went failed")
+                        return False
                     fdName = self.makeFolderMain("outputDataSet",0)
+                    print(tobeReturned)
                     print()
                     self.makeEachJsonFile(tobeReturned,fdName)
                     return True
