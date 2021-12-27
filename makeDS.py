@@ -6,4 +6,5 @@ with open("data.json","r") as file:
     file.close()
 
 mDs = MakeDataSet(data)
-mDs.make("2020")
+# print(mDs.makeEachVocFolder("outputDataSet_0","2020",0))
+mDs.make("testing")
