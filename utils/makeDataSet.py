@@ -17,22 +17,28 @@ class MakeDataSet:
     
     def makeEachJsonFile(self,data,folderName):
         print("[!] begin to create each json file")
+
         for item in data:
             if item["data"]:
                 folderYearPath = self.makeEachVocFolder(folderName,item["typeYear"],0)
                 for subitem in item["data"]:
-                    jsonFile = {
-                        "id" : subitem["id"],
-                        "name" : subitem["name"],
-                        "gender" : subitem["gender"],
-                        "school" : subitem["school"]
-                    }
-                    dumpJson = json.dumps(jsonFile,indent=4)
-                    fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
-                    with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
-                        jsonedFile.write(dumpJson)
-                        print(f"[✓] {fileName} successfully created")
-                        jsonedFile.close()
+                    if subitem["error"] == False:
+                        jsonFile = {
+                            "id" : subitem["id"],
+                            "name" : subitem["name"],
+                            "gender" : subitem["gender"],
+                            "school" : subitem["school"]
+                        }
+                        dumpJson = json.dumps(jsonFile,indent=4)
+                        fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
+                        print("here")
+                        with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
+                            jsonedFile.write(dumpJson)
+                            print(f"[✓] {fileName} successfully created")
+                            jsonedFile.close()
+                
+
+
     def makeFolderMain(self,name,num):
         folderName = f"{name}_{num}"
         print(f"[!] begin creating folder {folderName}")
@@ -62,6 +68,7 @@ class MakeDataSet:
         }
         subDataBucket = {
             "vocType" :vocType,
+            "error" : False,
             "id" : [],
             "name" : [],
             "gender" : [],
@@ -100,13 +107,17 @@ class MakeDataSet:
                 print(f"[!] proccessing {item['yearType']}")
                 for subitem in item["sourceDataLink"]:
                     try:
+                        print(f"[!] Fetching {subitem['vocType']}")
                         req = requests.get(subitem["api"],timeout=3)
                         jsoned = req.json()
                         eachDataBucket = self.eachDataHandler([item[3] for item in jsoned["data"]],item["yearType"],subitem["vocType"])
                         afterAlleachBucket["data"].append(eachDataBucket)
                     except Exception as e:
-                        afterAlleachBucket["data"] = False
-                        print(f"[x] Failed to fetch {subitem['vocType']}")
+                        afterAlleachBucket["data"].append({
+                            "vocType" : subitem["vocType"],
+                            "error" : True
+                        })
+                        print(f"[x] Failed to fetch {subitem['vocType']}\n")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -127,7 +138,6 @@ class MakeDataSet:
                         print("[x] can't create data. All of connections went failed")
                         return False
                     fdName = self.makeFolderMain("outputDataSet",0)
-                    print(tobeReturned)
                     print()
                     self.makeEachJsonFile(tobeReturned,fdName)
                     return True
