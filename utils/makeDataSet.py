@@ -22,12 +22,12 @@ class MakeDataSet:
                         jsonedFile.write(dumpJson)
                         print(f"[✓] {fileName} successfully created")
                         jsonedFile.close()
-    def makeFolder(self,name,num):
+    def makeFolderMain(self,name,num):
         folderName = f"{name}_{num}"
         print(f"[!] begin creating folder {folderName}")
         if os.path.exists(folderName):
             print(f"[x] {folderName} already taken")
-            return self.makeFolder(name,num+1)
+            return self.makeFolderMain(name,num+1)
         os.mkdir(folderName)
         print(f"[✓] successfully created folder {folderName}")
         return folderName
@@ -103,10 +103,11 @@ class MakeDataSet:
     def make(self,arg):
         try:
             tobeReturned = self.makeReqToApi(arg)
+            print(tobeReturned)
             if tobeReturned != False:
-                makeFolder = str(input("[?] begin to make dataset (y/n) :"))
-                if makeFolder.lower() == "y":
-                    fdName = self.makeFolder("outputDataSet",0)
+                makeFolderMain = str(input("[?] begin to make dataset (y/n) :"))
+                if makeFolderMain.lower() == "y":
+                    fdName = self.makeFolderMain("outputDataSet",0)
                     print()
                     self.makeEachJsonFile(tobeReturned,fdName)
                     return True
