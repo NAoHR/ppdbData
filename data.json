@@ -57,19 +57,6 @@
                     "vocType" : "tedk"
                 }
             ]
-        },
-        {
-            "yearType" : "testing",
-            "sourceDataLink" : [
-                {
-                    "api" : "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-4.json",
-                    "vocType" : "kgsp"
-                },
-                {
-                    "api" : "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-71.json",
-                    "vocType" : "sija"
-                }
-            ]
-        }   
+        }
     ]
 }
