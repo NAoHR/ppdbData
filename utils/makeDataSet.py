@@ -70,6 +70,16 @@ class MakeDataSet:
                     mergedEachYear.write(json.dumps(tobeMergedEachVoc,indent=3))
                     print(f" ➥ [✓] succesfully merged data and create merged-{item['typeYear']}")
                     mergedEachYear.close()
+                tobeMergedAll["id"] = tobeMergedAll["id"] + tobeMergedEachVoc["id"]
+                tobeMergedAll["name"] = tobeMergedAll["name"] + tobeMergedEachVoc["name"]
+                tobeMergedAll["gender"] = tobeMergedAll["gender"] + tobeMergedEachVoc["gender"]
+                tobeMergedAll["school"] = tobeMergedAll["school"] + tobeMergedEachVoc["school"]
+        with open(f"{folderName}/all-merged.json","w") as jsonFile:
+            print()
+            print(f"[✓] Successfully Merged All Data To One Json File")
+            jsonFile.write(json.dumps(tobeMergedAll,indent=4))
+            jsonFile.close()
+        return True
                 
         
                 
