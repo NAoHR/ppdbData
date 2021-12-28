@@ -64,11 +64,11 @@ class MakeDataSet:
                         fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
                         with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
                             jsonedFile.write(dumpJson)
-                            print(f" ➥[✓] {fileName} successfully created")
+                            print(f" ➥ [✓] {fileName} successfully created")
                             jsonedFile.close()
                 with open(f"{folderYearPath}/merged-{item['typeYear']}.json","w") as  mergedEachYear:
                     mergedEachYear.write(json.dumps(tobeMergedEachVoc,indent=3))
-                    print(f"[✓] succesfully merged data and create merged-{item['typeYear']}")
+                    print(f" ➥ [✓] succesfully merged data and create merged-{item['typeYear']}")
                     mergedEachYear.close()
                 
         
@@ -174,6 +174,7 @@ class MakeDataSet:
             tobeReturned = self.makeReqToApi(arg)
             print()
             self.logger()
+            print()
             if tobeReturned != False:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
@@ -206,4 +207,4 @@ class MakeDataSet:
                     print(f"Cant Fetch {itemid['vocType']}'s {itemid['id']} in {itemid['yearType']} Data")
             print("\n\n\n")
         else:
-            print("[✓] No Log To Be Displayed")
+            print("[✓] No Log To Be Displayed,All Data Successfully Fetched")
