@@ -64,7 +64,7 @@ class MakeDataSet:
                         fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
                         with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
                             jsonedFile.write(dumpJson)
-                            print(f"[✓] {fileName} successfully created")
+                            print(f" ➥[✓] {fileName} successfully created")
                             jsonedFile.close()
                 with open(f"{folderYearPath}/merged-{item['typeYear']}.json","w") as  mergedEachYear:
                     mergedEachYear.write(json.dumps(tobeMergedEachVoc,indent=3))
@@ -121,7 +121,7 @@ class MakeDataSet:
                 subDataBucket["name"].append(nameData)
                 subDataBucket["gender"].append(genderData)
                 subDataBucket["school"].append(schoolData)
-                print(f"[✓] {studentId}\t\tDone")
+                print(f"  ➥ [✓] {studentId}\t\tOK")
             except Exception as e:
                 self.logError["errorId"].append({
                     "id" : studentId,
@@ -148,7 +148,7 @@ class MakeDataSet:
                 print(f"[!] proccessing {item['yearType']}")
                 for subitem in item["sourceDataLink"]:
                     try:
-                        print(f"[!] Fetching {subitem['vocType']}")
+                        print(f"\n ➤ [!] Fetching {subitem['vocType']}")
                         req = requests.get(subitem["api"],timeout=3)
                         jsoned = req.json()
                         eachDataBucket = self.eachDataHandler([item[3] for item in jsoned["data"]],item["yearType"],subitem["vocType"])
@@ -162,7 +162,7 @@ class MakeDataSet:
                             "yearType" : item["yearType"],
                             "vocType" : subitem["vocType"]
                         })
-                        print(f"[x] Failed to fetch {subitem['vocType']}\n")
+                        print(f"↳[x] Failed to fetch {subitem['vocType']}\n")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -172,6 +172,7 @@ class MakeDataSet:
     def make(self,arg):
         try:
             tobeReturned = self.makeReqToApi(arg)
+            print()
             self.logger()
             if tobeReturned != False:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
