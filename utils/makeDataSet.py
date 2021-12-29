@@ -172,7 +172,7 @@ class MakeDataSet:
                             "yearType" : item["yearType"],
                             "vocType" : subitem["vocType"]
                         })
-                        print(f"↳[x] Failed to fetch {subitem['vocType']}\n")
+                        print(f"  ↳[x] Failed to fetch {subitem['vocType']}\n")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -186,15 +186,16 @@ class MakeDataSet:
             self.logger()
             print()
             if tobeReturned != False:
+                counterFailed = 0
+                for item in tobeReturned:
+                    for subitem in item["data"]:
+                        if subitem["error"] == True:
+                            counterFailed += 1
+                if counterFailed == sum([len(item["data"]) for item in tobeReturned]):
+                    print("[x] can't create dataset. All of connections went failed")
+                    return False
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
-                    counterFailed = 0
-                    for item in tobeReturned:
-                        if item["data"] == False:
-                            counterFailed +=1
-                    if counterFailed == len(tobeReturned):
-                        print("[x] can't create data. All of connections went failed")
-                        return False
                     fdName = self.makeFolderMain("outputDataSet",0)
                     print()
                     self.makeEachJsonFile(tobeReturned,fdName)
