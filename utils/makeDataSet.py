@@ -6,7 +6,8 @@ class MakeDataSet:
         self.data = data
         self.logError = {
             "errorVoc" : [],
-            "errorId" : []
+            "errorId" : [],
+            "errReport" : []
         }
         # 
         # errorVoc format => {
@@ -128,10 +129,18 @@ class MakeDataSet:
                 nameData = jsoned[0][3][2][-1]
                 genderData = jsoned[0][3][3][-2]
                 schoolData = jsoned[0][3][6][3]
-                subDataBucket["name"].append(nameData)
-                subDataBucket["gender"].append(genderData)
-                subDataBucket["school"].append(schoolData)
-                print(f"  ➥ [✓] {studentId}\t\tOK")
+                if jsoned[-1][3][3][-1] != "Tidak Lapor Diri":
+                    subDataBucket["name"].append(nameData)
+                    subDataBucket["gender"].append(genderData)
+                    subDataBucket["school"].append(schoolData)
+                    print(f"  ➥ [✓] {studentId}\t\tOK")
+                else:
+                    self.logError["errReport"].append({
+                        "id" : studentId,
+                        "yearType" : yearType,
+                        "vocType" : vocType
+                    })
+                    print(f"  ➥ [x] {studentId}\t\tFalse")
             except Exception as e:
                 self.logError["errorId"].append({
                     "id" : studentId,
@@ -172,7 +181,7 @@ class MakeDataSet:
                             "yearType" : item["yearType"],
                             "vocType" : subitem["vocType"]
                         })
-                        print(f"  ↳[x] Failed to fetch {subitem['vocType']}\n")
+                        print(f"  ➥ [x] Failed to fetch {subitem['vocType']}\n")
                 requestBucket.append(afterAlleachBucket)
             return requestBucket
         else:
@@ -192,7 +201,7 @@ class MakeDataSet:
                         if subitem["error"] == True:
                             counterFailed += 1
                 if counterFailed == sum([len(item["data"]) for item in tobeReturned]):
-                    print("[x] can't create dataset. All of connections went failed")
+                    print("➥[x] can't create dataset. All of connections went failed")
                     return False
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
@@ -207,15 +216,18 @@ class MakeDataSet:
 
     # getter
     def logger(self):
-        if self.logError["errorVoc"] or self.logError["errorId"]:
+        if self.logError["errorVoc"] or self.logError["errorId"] or self.logError["errReport"]:
             print("\n\n\n")
             print("[x] Error Data log")
             if self.logError["errorVoc"]:
                 for item in self.logError["errorVoc"]:
-                    print(f"[~] Can't Fetch {item['vocType']} in {item['yearType']} Data")
+                    print(f"  ➥ [~] Can't Fetch {item['vocType']} in {item['yearType']} Data")
             elif self.logError["errorId"]:
                 for itemid in self.logError["errorId"]:
-                    print(f"Cant Fetch {itemid['vocType']}'s {itemid['id']} in {itemid['yearType']} Data")
+                    print(f"  ➥ [~] Cant Fetch {itemid['vocType']}'s {itemid['id']} in {itemid['yearType']} Data")
+            elif self.logError["errReport"]:
+                for itemid in self.logError["errReport"]:
+                    print(f"  ➥ [~] {itemid['id']}'s self-report status : False")
             print("\n\n\n")
         else:
             print("[✓] No Log To Be Displayed,All Data Successfully Fetched")
