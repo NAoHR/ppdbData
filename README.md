@@ -22,7 +22,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/NAoHR/ppdbData">
-    <img src="Assets/preview.png" alt="Logo" width="500" height="400">
+    <img src="Assets/preview.png" alt="Logo" >
   </a>
 
   <h3 align="center">PPDBDataMaker</h3>
