@@ -21,6 +21,7 @@ class MakeDataSet:
         #   "vocType" : ___
         # }
     # proccess data to folder
+            
     def makeEachVocFolder(self,bfFolder,yearType,num):
         folderName = f"{bfFolder}/{yearType}_{num}" if num != 0 else f"{bfFolder}/{yearType}"
         print()
@@ -31,8 +32,14 @@ class MakeDataSet:
         os.mkdir(folderName)
         print(f"[✓] successfully created folder {folderName}")
         return folderName
-    
-    def makeEachJsonFile(self,data,folderName):
+
+    def makeItJson(self,pathFile,dtToCreate):
+        with open(pathFile,"w") as fileJson:
+            dumped = json.dumps(dtToCreate,indent=4)
+            fileJson.write(dumped)
+            fileJson.close()
+            return True
+    def makeEachDataSet(self,data,folderName):
         print("[!] begin to create each json file")
         tobeMergedAll = {
             "id" : [],
@@ -61,25 +68,23 @@ class MakeDataSet:
                         tobeMergedEachVoc["name"] = tobeMergedEachVoc["name"] + subitem["name"]
                         tobeMergedEachVoc["gender"] = tobeMergedEachVoc["gender"] + subitem["gender"]
                         tobeMergedEachVoc["school"] = tobeMergedEachVoc["school"] + subitem["school"]
-                        dumpJson = json.dumps(jsonFile,indent=4)
+
                         fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
-                        with open(f"{folderYearPath}/{fileName}","w") as jsonedFile:
-                            jsonedFile.write(dumpJson)
+                        subitemJson = self.makeItJson(f"{folderYearPath}/{fileName}",jsonFile)
+                        if subitemJson:
                             print(f" ➥ [✓] {fileName} successfully created")
-                            jsonedFile.close()
-                with open(f"{folderYearPath}/merged-{item['typeYear']}.json","w") as  mergedEachYear:
-                    mergedEachYear.write(json.dumps(tobeMergedEachVoc,indent=3))
+
+                mergedJson = self.makeItJson(f"{folderYearPath}/merged-{item['typeYear']}.json",tobeMergedEachVoc)
+                if mergedJson:
                     print(f" ➥ [✓] succesfully merged data and create merged-{item['typeYear']}")
-                    mergedEachYear.close()
                 tobeMergedAll["id"] = tobeMergedAll["id"] + tobeMergedEachVoc["id"]
                 tobeMergedAll["name"] = tobeMergedAll["name"] + tobeMergedEachVoc["name"]
                 tobeMergedAll["gender"] = tobeMergedAll["gender"] + tobeMergedEachVoc["gender"]
                 tobeMergedAll["school"] = tobeMergedAll["school"] + tobeMergedEachVoc["school"]
-        with open(f"{folderName}/all-merged.json","w") as jsonFile:
-            print()
+        
+        mergedAll = self.makeItJson(f"{folderName}/all-merged.json",tobeMergedAll)
+        if mergedAll:
             print(f"[✓] Successfully Merged All Data To One Json File")
-            jsonFile.write(json.dumps(tobeMergedAll,indent=4))
-            jsonFile.close()
         return True
                 
         
@@ -207,8 +212,7 @@ class MakeDataSet:
                 if makeFolderMain.lower() == "y":
                     fdName = self.makeFolderMain("outputDataSet",0)
                     print()
-                    self.makeEachJsonFile(tobeReturned,fdName)
-                    return True
+                    self.makeEachDataSet(tobeReturned,fdName)
                 return False
             return False
         except KeyboardInterrupt:
