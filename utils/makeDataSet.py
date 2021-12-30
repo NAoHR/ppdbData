@@ -127,7 +127,6 @@ class MakeDataSet:
             "school" : []
         }
         for studentId in studentList:
-            subDataBucket["id"].append(studentId)
             try:
                 req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{studentId}",timeout=3,headers=headers)
                 jsoned = req.json()
@@ -135,6 +134,7 @@ class MakeDataSet:
                 genderData = jsoned[0][3][3][-2]
                 schoolData = jsoned[0][3][6][3]
                 if jsoned[-1][3][3][-1] != "Tidak Lapor Diri":
+                    subDataBucket["id"].append(studentId)
                     subDataBucket["name"].append(nameData)
                     subDataBucket["gender"].append(genderData)
                     subDataBucket["school"].append(schoolData)
