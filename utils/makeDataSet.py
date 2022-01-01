@@ -2,8 +2,9 @@ import json
 import requests
 import os
 class MakeDataSet:
-    def __init__(self,data):
+    def __init__(self,data,fileType):
         self.data = data
+        self.fileType = fileType
         self.logError = {
             "errorVoc" : [],
             "errorId" : [],
@@ -39,7 +40,7 @@ class MakeDataSet:
             fileJson.write(dumped)
             fileJson.close()
             return True
-    def makeEachDataSet(self,data,folderName):
+    def makeEachDatasetJson(self,data,folderName):
         print("[!] begin to create each json file")
         tobeMergedAll = {
             "id" : [],
@@ -86,10 +87,10 @@ class MakeDataSet:
         if mergedAll:
             print(f"[✓] Successfully Merged All Data To One Json File")
         return True
-                
-        
-                
+    
 
+    def makeEachDataSetcsv(self,data):
+        print(data)
 
     def makeFolderMain(self,name,num):
         folderName = f"{name}_{num}"
@@ -118,14 +119,20 @@ class MakeDataSet:
             "Sec-GPC": "1",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36" # add your own userAgent
         }
-        subDataBucket = {
+        dataBucket = {
             "vocType" :vocType,
             "error" : False,
             "id" : [],
             "name" : [],
             "gender" : [],
             "school" : []
+        } if self.fileType == "json" else {
+            "vocType" : vocType,
+            "error" : False,
+            "head" : ["id","name","gender","school"],
+            "csvData" : []
         }
+
         for studentId in studentList:
             try:
                 req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{studentId}",timeout=3,headers=headers)
@@ -134,10 +141,20 @@ class MakeDataSet:
                 genderData = jsoned[0][3][3][-2]
                 schoolData = jsoned[0][3][6][3]
                 if jsoned[-1][3][3][-1] != "Tidak Lapor Diri":
-                    subDataBucket["id"].append(studentId)
-                    subDataBucket["name"].append(nameData)
-                    subDataBucket["gender"].append(genderData)
-                    subDataBucket["school"].append(schoolData)
+                    if self.fileType == "json":
+                        dataBucket["id"].append(studentId)
+                        dataBucket["name"].append(nameData)
+                        dataBucket["gender"].append(genderData)
+                        dataBucket["school"].append(schoolData)
+                    else:
+                        dataBucket["csvData"].append(
+                            {
+                                "id" : studentId,
+                                "name" : nameData,
+                                "gender" : genderData,
+                                "school" : schoolData
+                            }
+                        )
                     print(f"  ➥ [✓] {studentId}\t\tOK")
                 else:
                     self.logError["errReport"].append({
@@ -152,11 +169,8 @@ class MakeDataSet:
                     "yearType" : yearType,
                     "vocType" : vocType
                 })
-                subDataBucket["name"].append(None)
-                subDataBucket["gender"].append(None)
-                subDataBucket["school"].append(None)
                 print(f"  ➥ [x] {studentId}\t\tFailed")
-        return subDataBucket
+        return dataBucket
 
 
     def makeReqToApi(self,arg):
@@ -211,8 +225,11 @@ class MakeDataSet:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
                     fdName = self.makeFolderMain("outputDataSet",0)
-                    print()
-                    self.makeEachDataSet(tobeReturned,fdName)
+                    if self.fileType == "json":
+                        print()
+                        self.makeEachDatasetJson(tobeReturned,fdName) if self.fileType == "json" else self.makeEachDataSetcsv(tobeReturned,fdName)
+                    else:
+                        [print(tobeReturned)]
                 return False
             return False
         except KeyboardInterrupt:
