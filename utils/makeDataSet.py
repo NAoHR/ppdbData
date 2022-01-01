@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import csv
 class MakeDataSet:
     def __init__(self,data,fileType):
         self.data = data
@@ -40,14 +41,26 @@ class MakeDataSet:
             fileJson.write(dumped)
             fileJson.close()
             return True
-    def makeEachDatasetJson(self,data,folderName):
+            
+    def makeItCsv(self,pathFile,dtToCreate):
+        with open(pathFile,"w",encoding="UTF-8",newline='') as csvFile:
+            writer = csv.DictWriter(csvFile, fieldnames=dtToCreate["head"])
+            writer.writeheader()
+            writer.writerows(dtToCreate["data"])
+            return True
+
+    def makeEachDataSet(self,data,folderName):
         print("[!] begin to create each json file")
         tobeMergedAll = {
             "id" : [],
             "name": [],
             "gender" : [],
             "school" : []
+        } if self.fileType == "json" else {
+            "head" : [],
+            "data" : []
         }
+
         for item in data:
             if item["data"]:
                 folderYearPath = self.makeEachVocFolder(folderName,item["typeYear"],0)
@@ -56,41 +69,60 @@ class MakeDataSet:
                     "name": [],
                     "gender" : [],
                     "school" : []
+                } if self.fileType == "json" else {
+                    "head" : item["head"],
+                    "data" : []
                 }
                 for subitem in item["data"]:
                     if subitem["error"] == False:
-                        jsonFile = {
-                            "id" : subitem["id"],
-                            "name" : subitem["name"],
-                            "gender" : subitem["gender"],
-                            "school" : subitem["school"]
-                        }
-                        tobeMergedEachVoc["id"] = tobeMergedEachVoc["id"] + subitem["id"]
-                        tobeMergedEachVoc["name"] = tobeMergedEachVoc["name"] + subitem["name"]
-                        tobeMergedEachVoc["gender"] = tobeMergedEachVoc["gender"] + subitem["gender"]
-                        tobeMergedEachVoc["school"] = tobeMergedEachVoc["school"] + subitem["school"]
+                        if self.fileType == "json":
+                            jsonFile = {
+                                "id" : subitem["id"],
+                                "name" : subitem["name"],
+                                "gender" : subitem["gender"],
+                                "school" : subitem["school"]
+                            }
+                            tobeMergedEachVoc["id"] = tobeMergedEachVoc["id"] + subitem["id"]
+                            tobeMergedEachVoc["name"] = tobeMergedEachVoc["name"] + subitem["name"]
+                            tobeMergedEachVoc["gender"] = tobeMergedEachVoc["gender"] + subitem["gender"]
+                            tobeMergedEachVoc["school"] = tobeMergedEachVoc["school"] + subitem["school"]
 
-                        fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
-                        subitemJson = self.makeItJson(f"{folderYearPath}/{fileName}",jsonFile)
-                        if subitemJson:
-                            print(f" ➥ [✓] {fileName} successfully created")
-
-                mergedJson = self.makeItJson(f"{folderYearPath}/merged-{item['typeYear']}.json",tobeMergedEachVoc)
+                            fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
+                            subitemJson = self.makeItJson(f"{folderYearPath}/{fileName}",jsonFile)
+                            if subitemJson:
+                                print(f" ➥ [✓] {fileName} successfully created")
+                        else:
+                            tobeMergedEachVoc["data"] = tobeMergedEachVoc["data"] + subitem["csvData"]
+                            fileName = f"{subitem['vocType']}-{item['typeYear']}.csv"
+                            subitemCsv = self.makeItCsv(f"{folderYearPath}/{fileName}",{
+                                "head" : item["head"],
+                                "data" : subitem["csvData"]
+                            })
+                            if subitemCsv:
+                                print(f" ➥ [✓] {fileName} successfully created")
+                mergedJson = self.makeItJson(f"{folderYearPath}/merged-{item['typeYear']}.json",tobeMergedEachVoc) if self.fileType == "json" else self.makeItCsv(f"{folderYearPath}/merged-{item['typeYear']}.csv",tobeMergedEachVoc)
                 if mergedJson:
                     print(f" ➥ [✓] succesfully merged data and create merged-{item['typeYear']}")
-                tobeMergedAll["id"] = tobeMergedAll["id"] + tobeMergedEachVoc["id"]
-                tobeMergedAll["name"] = tobeMergedAll["name"] + tobeMergedEachVoc["name"]
-                tobeMergedAll["gender"] = tobeMergedAll["gender"] + tobeMergedEachVoc["gender"]
-                tobeMergedAll["school"] = tobeMergedAll["school"] + tobeMergedEachVoc["school"]
+                
+                if self.fileType == "json":
+                    tobeMergedAll["id"] = tobeMergedAll["id"] + tobeMergedEachVoc["id"]
+                    tobeMergedAll["name"] = tobeMergedAll["name"] + tobeMergedEachVoc["name"]
+                    tobeMergedAll["gender"] = tobeMergedAll["gender"] + tobeMergedEachVoc["gender"]
+                    tobeMergedAll["school"] = tobeMergedAll["school"] + tobeMergedEachVoc["school"]
+                else:
+                    tobeMergedAll["head"] = tobeMergedEachVoc["head"]
+                    tobeMergedAll["data"] = tobeMergedAll["data"] + tobeMergedEachVoc["data"]
         
-        mergedAll = self.makeItJson(f"{folderName}/all-merged.json",tobeMergedAll)
+        mergedAll = self.makeItJson(f"{folderName}/all-merged.json",tobeMergedAll) if self.fileType == "json" else self.makeItCsv(f"{folderName}/all-merged.csv",tobeMergedAll)
         if mergedAll:
             print(f"[✓] Successfully Merged All Data To One Json File")
         return True
     
 
-    def makeEachDataSetcsv(self,data):
-        print(data)
+    # def makeEachDataSetcsv(self,data,mainPath):
+    #     for item in data:
+    #         for subitem in item["data"]:
+    #             folderYearPath = 
 
     def makeFolderMain(self,name,num):
         folderName = f"{name}_{num}"
@@ -129,7 +161,6 @@ class MakeDataSet:
         } if self.fileType == "json" else {
             "vocType" : vocType,
             "error" : False,
-            "head" : ["id","name","gender","school"],
             "csvData" : []
         }
 
@@ -180,6 +211,7 @@ class MakeDataSet:
             for item in afterParsed:
                 afterAlleachBucket = {
                     "typeYear" : item["yearType"],
+                    "head" : ["id","name","gender","school"],
                     "data" : []
                 }
                 print()
@@ -225,11 +257,13 @@ class MakeDataSet:
                 makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                 if makeFolderMain.lower() == "y":
                     fdName = self.makeFolderMain("outputDataSet",0)
-                    if self.fileType == "json":
-                        print()
-                        self.makeEachDatasetJson(tobeReturned,fdName) if self.fileType == "json" else self.makeEachDataSetcsv(tobeReturned,fdName)
-                    else:
-                        [print(tobeReturned)]
+                    self.makeEachDataSet(tobeReturned,fdName)
+                    # if self.fileType == "json":
+                    #     print()
+                    #     # self.makeEachDataSet(tobeReturned,fdName) if self.fileType == "json" else self.makeEachDataSetcsv(tobeReturned,fdName)
+                    #     self.makeEachDataSet(tobeReturned,fdName)
+                    # else:
+                    #     [print(tobeReturned)]
                 return False
             return False
         except KeyboardInterrupt:
