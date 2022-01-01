@@ -155,7 +155,7 @@ class MakeDataSet:
                 subDataBucket["name"].append(None)
                 subDataBucket["gender"].append(None)
                 subDataBucket["school"].append(None)
-                print(f"[x] {studentId}\t\tFailed")
+                print(f"  ➥ [x] {studentId}\t\tFailed")
         return subDataBucket
 
 
