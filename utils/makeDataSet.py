@@ -3,7 +3,7 @@ import requests
 import os
 import csv
 class MakeDataSet:
-    def __init__(self,data,fileType):
+    def __init__(self,data):
         self.data = data
         self.fileType = ""
         self.logError = {
@@ -115,14 +115,8 @@ class MakeDataSet:
         
         mergedAll = self.makeItJson(f"{folderName}/all-merged.json",tobeMergedAll) if self.fileType == "json" else self.makeItCsv(f"{folderName}/all-merged.csv",tobeMergedAll)
         if mergedAll:
-            print(f"[✓] Successfully Merged All Data To One Json File")
+            print(f"[✓] Successfully Merged All Data To One {self.fileType} File")
         return True
-    
-
-    # def makeEachDataSetcsv(self,data,mainPath):
-    #     for item in data:
-    #         for subitem in item["data"]:
-    #             folderYearPath = 
 
     def makeFolderMain(self,name,num):
         folderName = f"{name}_{num}"
@@ -270,6 +264,7 @@ class MakeDataSet:
                                 print("[x] invalid option")
                         fdName = self.makeFolderMain("outputDataSet",0)
                         self.makeEachDataSet(tobeReturned,fdName)
+                        break
                     elif makeFolderMain == "n":
                         return False
                     else:
