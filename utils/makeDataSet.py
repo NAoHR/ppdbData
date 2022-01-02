@@ -5,7 +5,7 @@ import csv
 class MakeDataSet:
     def __init__(self,data,fileType):
         self.data = data
-        self.fileType = fileType
+        self.fileType = ""
         self.logError = {
             "errorVoc" : [],
             "errorId" : [],
@@ -254,17 +254,26 @@ class MakeDataSet:
                 if counterFailed == sum([len(item["data"]) for item in tobeReturned]):
                     print("➥[x] can't create dataset. All of connections went failed")
                     return False
-                makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
-                if makeFolderMain.lower() == "y":
-                    fdName = self.makeFolderMain("outputDataSet",0)
-                    self.makeEachDataSet(tobeReturned,fdName)
-                    # if self.fileType == "json":
-                    #     print()
-                    #     # self.makeEachDataSet(tobeReturned,fdName) if self.fileType == "json" else self.makeEachDataSetcsv(tobeReturned,fdName)
-                    #     self.makeEachDataSet(tobeReturned,fdName)
-                    # else:
-                    #     [print(tobeReturned)]
-                return False
+                while True:
+
+                    makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
+                    if makeFolderMain.lower() == "y":
+                        while True:
+                            q = int(input("[?] choose data type ! \n  ➥ 1. json\n  ➥ 2. csv\n (1/2) : "))
+                            if q == 1:
+                                self.fileType == "json"
+                                break
+                            elif q == 2:
+                                self.fileType == "csv"
+                                break
+                            else:
+                                print("[x] invalid option")
+                        fdName = self.makeFolderMain("outputDataSet",0)
+                        self.makeEachDataSet(tobeReturned,fdName)
+                    elif makeFolderMain == "n":
+                        return False
+                    else:
+                        print("[x] invalid option")
             return False
         except KeyboardInterrupt:
             print("[x] Adios")
