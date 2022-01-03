@@ -6,7 +6,7 @@ class MakeDataJson:
                     "link" : "https://ppdb.jakarta.go.id/sekolah/1-smp-prestasi.json"
                 },
                 "ayearBefore" : {
-                    "link" : "https://arsip.siap-ppdb.com/2020/jakarta/sekolah/1-smp-prestasi.json"
+                    "link" : "https://arsip.siap-ppdb.com/2020/jakarta/sekolah/2-smp-prestasi.json"
                 },
                 "eachVoc" : False
             },
@@ -39,4 +39,3 @@ class MakeDataJson:
                 }
             }
         }
-        self.schoolType = schoolType
