@@ -1,3 +1,4 @@
+# still on development, dont use this
 import json
 import requests
 
@@ -18,6 +19,10 @@ class MakeDataJson:
                     "1" : "current",
                     "2" : "ayearBefore"
                 }
+            },
+            "linkSchool" :{
+                "current" : "https://ppdb.jakarta.go.id/seleksi/prestasi/",
+                "ayearBefore" : "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/"
             },
             "school" : {
                 "smp" : {
@@ -108,6 +113,7 @@ class MakeDataJson:
             return ask(jsonedData)
         except Exception as e:
             return False
+
     def __getCredsData(self):
         try:
             r = requests.get(self.data["school"][self.schoolType]["eachVoc"][self.yearType],timeout=3)
@@ -116,14 +122,27 @@ class MakeDataJson:
         except Exception as e:
             print(e)
             return []
-            
+
+    def __loopDataInCred(self,data):
+        for item in data:
+            link = self.data["linkSchool"][self.yearType]
+            prefix = self.data["school"][self.schoolType]["yearType"][self.yearType]["prefix"]
+            merged = f"{link}{self.schoolType}/{prefix}-{self.schoolCred['sekolah_id']}-{item[0]}.json"
+            try:
+                r = requests.get(merged,timeout=3)
+                print(r.status_code)
+            except:
+                print("Error")
+
     def make(self):
         try:
             isSchoolandYearDone = self.__getSchoolAndYear()
             if isSchoolandYearDone:
                 reqSchool = self.__reqAllSchool()
                 if reqSchool:
-                    self.__getCredsData()
+                    credData = self.__getCredsData()
+                    if credData:
+                        self.__loopDataInCred(credData)
         except KeyboardInterrupt:
             print("adios")
 
