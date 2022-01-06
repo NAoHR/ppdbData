@@ -23,16 +23,11 @@ class MakeDataJson:
                     "3" : "both"
                 }
             },
-            "linkSchool" :[
-                {
-                    "name" : "current",
-                    "link" : "https://ppdb.jakarta.go.id/seleksi/prestasi/",
-                },
-                {
-                    "name" : "current",
-                    "link" : "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/"
-                }
-            ],
+            "linkSchool" :  {
+                "current" : "https://ppdb.jakarta.go.id/seleksi/prestasi/",
+                "2020" : "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/"
+            },
+
             "school" : {
                 "smp" : [
                             {
@@ -120,19 +115,67 @@ class MakeDataJson:
             chosen = loopQ(len(jsoned))
             data = jsoned[chosen]
             afterR = requests.get(schoolData["linkVoc"],timeout=3)
+
             jsonedAfterR = afterR.json()
-            self.credFromCurrent["eachId"].append(data["sekolah_id"])
-            self.credFromCurrent["eachDataId"].append(jsonedAfterR[data["sekolah_id"]])
+            self.credFromCurrent["eachDataId"].append({
+                "schoolName" : data["nama"],
+                "id" : data["sekolah_id"],
+                "yearType" : schoolData["yearType"],
+                "pref" : schoolData["pref"],
+                "data" : jsonedAfterR[data["sekolah_id"]]
+            })
         except:
             return False
-    # def __beginIfCredIsDone(self):
+
+    def __createEachJsonData(self):
+        tobereturned = []
+        for item in self.credFromCurrent["eachDataId"]:
+            jsonBucket = []
+            for subitem in item["data"]:
+                merged = f"{self.data['linkSchool'][item['yearType']]}/{self.credFromCurrent['schoolType']}/{item['pref']}-{item['id']}-{subitem[0]}.json"
+                r = requests.get(merged)
+                if r.status_code == 200:
+                    jsonBucket.append({
+                        "api" : merged,
+                        "vocType" : f"{subitem[1].replace(' ','-')}_{item['schoolName'].replace(' ','-')}"
+                    })
+            tobereturned.append({
+                "yearType" : item['yearType'],
+                "sourceDataLink" :  jsonBucket
+            })
+        return tobereturned
+
+    def __createJsonFile(self,data,fileName="data_1"):
+        with open(f"{fileName}.json","w") as f:
+            newdata = {
+                "data" : data
+            }
+            f.write(json.dumps(newdata,indent=3))
+            return True
+
+    def __beginIfCredIsDone(self):
+        print()
+        if len(set([item["id"] for item in self.credFromCurrent["eachDataId"]])) == 1:
+            return self.__createEachJsonData()
+        else:
+            print("[!] Both data are not the same [!]")
+            yesOrNo = str(input("[?] Do yo really want to procceed this data (yes/no)? "))
+            if yesOrNo.lower() == "no":
+                print("Abort")
+                return False
+            print("zamn")
+            return self.__createEachJsonData()
+        
 
     def make(self):
         try:
             if self.__askSchoolType():
                 for item in self.data["school"][self.credFromCurrent["schoolType"]]:
                     self.__requestFromChosenSchool(item)
-                print(json.dumps(self.credFromCurrent,indent=3))
+                bucket = self.__beginIfCredIsDone()
+                if bucket:
+                    ask = str(input("[?] fileName (default: data1) : "))
+                    return self.__createJsonFile(bucket,fileName=ask)
         except KeyboardInterrupt:
             print("adios")
 
