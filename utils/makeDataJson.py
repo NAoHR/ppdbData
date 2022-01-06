@@ -54,7 +54,7 @@ class MakeDataJson:
                                 "yearType" : "2020",
                                 "link" : "https://arsip.siap-ppdb.com/2020/jakarta/sekolah/1-sma-prestasi.json",
                                 "linkVoc" : "https://arsip.siap-ppdb.com/2020/jakarta/sekolah/kompetensi/1-sma-prestasi.json",
-                                "pref" : "1"
+                                "pref" : "2"
                             }
                 ],
                 "smk" : [
@@ -130,11 +130,16 @@ class MakeDataJson:
     def __createEachJsonData(self):
         tobereturned = []
         for item in self.credFromCurrent["eachDataId"]:
+            print(f"[~] Begin to request {item['schoolName']}-{item['yearType']}")
             jsonBucket = []
             for subitem in item["data"]:
-                merged = f"{self.data['linkSchool'][item['yearType']]}/{self.credFromCurrent['schoolType']}/{item['pref']}-{item['id']}-{subitem[0]}.json"
-                r = requests.get(merged)
+                try:
+                    merged = f"{self.data['linkSchool'][item['yearType']]}{self.credFromCurrent['schoolType']}/{item['pref']}-{item['id']}-{subitem[0]}.json"
+                    r = requests.get(merged)
+                except ConnectionError:
+                    print(f"  ➥ [x] failed to request {item['schoolName']} : Connection Err")
                 if r.status_code == 200:
+                    print(f"  ➥ [✓] success to request {item['schoolName']}")
                     jsonBucket.append({
                         "api" : merged,
                         "vocType" : f"{subitem[1].replace(' ','-')}_{item['schoolName'].replace(' ','-')}"
@@ -146,11 +151,13 @@ class MakeDataJson:
         return tobereturned
 
     def __createJsonFile(self,data,fileName="data_1"):
-        with open(f"{fileName}.json","w") as f:
+        fileName = f"{fileName}.json"
+        with open(f"{fileName}","w") as f:
             newdata = {
                 "data" : data
             }
             f.write(json.dumps(newdata,indent=3))
+            print(f"[✓] Successfully create {fileName}")
             return True
 
     def __beginIfCredIsDone(self):
@@ -174,10 +181,7 @@ class MakeDataJson:
                     self.__requestFromChosenSchool(item)
                 bucket = self.__beginIfCredIsDone()
                 if bucket:
-                    ask = str(input("[?] fileName (default: data1) : "))
+                    ask = str(input("\n[?] fileName (default: data1) : "))
                     return self.__createJsonFile(bucket,fileName=ask)
         except KeyboardInterrupt:
             print("adios")
-
-a = MakeDataJson()
-a.make()
