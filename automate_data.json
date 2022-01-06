@@ -1,0 +1,62 @@
+{
+   "data": [
+      {
+         "yearType": "current",
+         "sourceDataLink": [
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-4.json",
+               "vocType": "Konstruksi-Gedung,-Sanitasi-dan-Perawatan_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-8.json",
+               "vocType": "Teknik-Tenaga-Listrik_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-14.json",
+               "vocType": "Teknik-Fabrikasi-Logam-dan-Manufaktur_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-20.json",
+               "vocType": "Teknik-dan-Manajemen-Perawatan-Otomotif_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-71.json",
+               "vocType": "Sistem-Informatika-Jaringan-dan-Aplikasi_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://ppdb.jakarta.go.id/seleksi/prestasi/smk/1-42010088-202.json",
+               "vocType": "Teknik-Elektronika-Daya-dan-Komunikasi_SMK-NEGERI-26"
+            }
+         ]
+      },
+      {
+         "yearType": "2020",
+         "sourceDataLink": [
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-4.json",
+               "vocType": "Konstruksi-Gedung,-Sanitasi-dan-Perawatan_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-8.json",
+               "vocType": "Teknik-Tenaga-Listrik_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-14.json",
+               "vocType": "Teknik-Fabrikasi-Logam-dan-Manufaktur_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-20.json",
+               "vocType": "Teknik-dan-Manajemen-Perawatan-Otomotif_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-71.json",
+               "vocType": "Sistem-Informatika,-Jaringan-dan-Aplikasi_SMK-NEGERI-26"
+            },
+            {
+               "api": "https://arsip.siap-ppdb.com/2020/jakarta/seleksi/prestasi/smk/2-42010088-202.json",
+               "vocType": "Teknik-Elektronika-Daya-dan-Komunikasi_SMK-NEGERI-26"
+            }
+         ]
+      }
+   ]
+}
