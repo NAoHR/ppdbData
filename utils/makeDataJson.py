@@ -75,11 +75,12 @@ class MakeDataJson:
         }
     def __askSchoolType(self,err=""):
         print(f"""
+[!] Jakarta Only [!]
 [?] Choose school type : {err}
  ➥ [!] choose by number
-   ➥ [~] 1. smp
-   ➥ [~] 2. sma
-   ➥ [~] 3. smk
+   ➥ [1] . smp
+   ➥ [2] . sma
+   ➥ [3] . smk
         """)
         try:
             inputer = int(input("[?] : "))
@@ -111,7 +112,7 @@ class MakeDataJson:
             r = requests.get(schoolData["link"],timeout=3)
             jsoned = r.json()
             for key,value in enumerate(jsoned):
-                print(f"  ➥ [~] {key+1}. {value['nama']}")
+                print(f"  ➥ [{key+1}] . {value['nama']}")
             chosen = loopQ(len(jsoned))
             data = jsoned[chosen]
             afterR = requests.get(schoolData["linkVoc"],timeout=3)
