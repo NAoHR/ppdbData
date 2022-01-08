@@ -185,4 +185,4 @@ class MakeDataJson:
                     ask = str(input("\n[?] fileName (default: data1) : "))
                     return self.__createJsonFile(bucket,fileName=ask)
         except KeyboardInterrupt:
-            print("adios")
+            print("\nadios")
