@@ -1,4 +1,5 @@
 
+  
 <div id="top"></div>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
@@ -57,54 +58,32 @@ Fitur pada program ini:
 
 Bagian ini akan mencakup cara pengoprasian program ini dimulai dari pencarian data (Pencarian data dilakukan manual telebih dahulu.update selanjutnya akan membuat program ini dapat membuat data secara otomatis),sampai format data yang dapat diterima
 
-### Prerequisites
 
-Untuk versi ini anda diperlukan untuk mengetahui cara melihat ke-api mana website me-request data, contoh :
-* <img src="Assets/howto1.png" alt="Logo" >
-* <img src="Assets/howto2.png" alt="Logo" >
-* <img src="Assets/howto3.png" alt="Logo" >
-### Instalasi - Mendapatkan Data
+### Instalasi - Buat data
 
-Data bisa anda dapatkan pada laman resmi [ppdb](https://https://ppdb.jakarta.go.id/)
 1. Cari api sekolah dengan cara pada bagian prerequisites 
 2. Clone repo ini
    ```sh
    git clone https://github.com/NAoHR/ppdbData.git
    ```
-3. buat folder data.json dengan format dibawah ini,anda bisa melihat contoh pada [Link ini](https://github.com/NAoHR/ppdbData/blob/main/data.json) dan pastikan dengan format seperti di bawah ini
-   ```js
-   {
-	   "data" : [
-		   {
-		   "yearType" : "isi section ini dengan menggunakan tipe tahun data ppdb itu dibuat (untuk data tahun ini anda dapat mengisi dengan 'current')",
-		   "sourceDataLink" : [ // section ini merupakan list yang akan digunakan untuk menaruh beberapa jurusan yang ada pada sekolah tersebut
-				   {
-					   "api" : "berisi link api yang sudah didapat dari kolom prerequisits diatas",
-					   "vocType" : "berisi tentang jurusan api tersebut contoh: sija,ipa,kgsp,ips,etc"
-				   },
-				   {
-					   // dan seterusnya
-				   }	
-				]
-		   }
-	   ]
-   }
+3. Jalanlan perintah dibawah ini
+   ```sh
+   python3 makeJF.py
    ```
-4. Ganti nama file sesuai dengan file json yang sudah anda buat pada `makeDS.py`
+*	<img src="Assets/mjf1.png" alt="pilih tingkatan" >
+*	<img src="Assets/mjf2.png" alt="pilih sekolah" >
+*	<img src="Assets/mjf3.png" alt="data sukses" >
+4. Ganti nama file sesuai dengan output file json dari program makeJF, kemudian ganti "data.json" dengan nama fie output hasil keluaran makeJF
    ```python
-	with  open("data.json","r") as file:
+	with  open("data.json","r") as file: # ganti pada bagian ini
 	data = json.load(file)
 	file.close()
    ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
 <!-- USAGE EXAMPLES -->
-## Usage
+## Penggunaan
 
-Setelah anda berhasil melaksanakan semua pada tahap prerequisite dan instalasi kemudian run program
+Setelah proses buat data selesai,kemudian jalankan
 ```sh
 python3 makeDs.py
 ```
@@ -119,7 +98,8 @@ python3 makeDs.py
 - [x] Request tiap siswa yang ada pada tiap tiap jurusan kemudian ambil data gender,nama,id,dan sekolah pada siswa tersebut
 - [x] Buat Folder untuk tempat penyimpanan output
 - [x] Buat Output program dalam format json
-- [ ] Buat File data.json menjadi otomatis takperlu cari manual
+- [x] Buat File data.json menjadi otomatis tak perlu cari manual
+- [ ] Buat data tidak hanya untuk Provinsi Jakarta
 
 
 
