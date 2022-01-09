@@ -55,7 +55,9 @@ class MakeDataSet:
             "id" : [],
             "name": [],
             "gender" : [],
-            "school" : []
+            "school" : [],
+            "kec" : [],
+            "kel" : []
         } if self.fileType == "json" else {
             "head" : [],
             "data" : []
@@ -68,7 +70,10 @@ class MakeDataSet:
                     "id" : [],
                     "name": [],
                     "gender" : [],
-                    "school" : []
+                    "school" : [],
+                    "kec" : [],
+                    "kel" : []
+                    
                 } if self.fileType == "json" else {
                     "head" : item["head"],
                     "data" : []
@@ -80,12 +85,16 @@ class MakeDataSet:
                                 "id" : subitem["id"],
                                 "name" : subitem["name"],
                                 "gender" : subitem["gender"],
-                                "school" : subitem["school"]
+                                "school" : subitem["school"],
+                                "kec" : subitem["kec"],
+                                "kel" : subitem["kel"]
                             }
                             tobeMergedEachVoc["id"] = tobeMergedEachVoc["id"] + subitem["id"]
                             tobeMergedEachVoc["name"] = tobeMergedEachVoc["name"] + subitem["name"]
                             tobeMergedEachVoc["gender"] = tobeMergedEachVoc["gender"] + subitem["gender"]
                             tobeMergedEachVoc["school"] = tobeMergedEachVoc["school"] + subitem["school"]
+                            tobeMergedEachVoc["kec"] = tobeMergedEachVoc["kec"] + subitem["kec"]
+                            tobeMergedEachVoc["kel"] = tobeMergedEachVoc["kel"] + subitem["kel"]
 
                             fileName = f"{subitem['vocType']}-{item['typeYear']}.json"
                             subitemJson = self.makeItJson(f"{folderYearPath}/{fileName}",jsonFile)
@@ -109,6 +118,8 @@ class MakeDataSet:
                     tobeMergedAll["name"] = tobeMergedAll["name"] + tobeMergedEachVoc["name"]
                     tobeMergedAll["gender"] = tobeMergedAll["gender"] + tobeMergedEachVoc["gender"]
                     tobeMergedAll["school"] = tobeMergedAll["school"] + tobeMergedEachVoc["school"]
+                    tobeMergedAll["kec"] = tobeMergedAll["kec"] + tobeMergedEachVoc["kec"]
+                    tobeMergedAll["kel"] = tobeMergedAll["kel"] + tobeMergedEachVoc["kel"]
                 else:
                     tobeMergedAll["head"] = tobeMergedEachVoc["head"]
                     tobeMergedAll["data"] = tobeMergedAll["data"] + tobeMergedEachVoc["data"]
@@ -151,7 +162,9 @@ class MakeDataSet:
             "id" : [],
             "name" : [],
             "gender" : [],
-            "school" : []
+            "school" : [],
+            "kec" : [],
+            "kel" : []
         } if self.fileType == "json" else {
             "vocType" : vocType,
             "error" : False,
@@ -162,6 +175,9 @@ class MakeDataSet:
             try:
                 req = requests.get(f"{apiLink}{studentId}",timeout=3) if yearType == "current" else requests.get(f"{apiLink}{studentId}",timeout=3,headers=headers)
                 jsoned = req.json()
+                splittedkecKel = jsoned[0][3][5][3].split(",")
+                kelData = splittedkecKel[1][1:]
+                kecData = splittedkecKel[2][1:]
                 nameData = jsoned[0][3][2][-1]
                 genderData = jsoned[0][3][3][-2]
                 schoolData = jsoned[0][3][6][3]
@@ -171,13 +187,17 @@ class MakeDataSet:
                         dataBucket["name"].append(nameData)
                         dataBucket["gender"].append(genderData)
                         dataBucket["school"].append(schoolData)
+                        dataBucket["kel"].append(kelData)
+                        dataBucket["kec"].append(kecData)
                     else:
                         dataBucket["csvData"].append(
                             {
                                 "id" : studentId,
                                 "name" : nameData,
                                 "gender" : genderData,
-                                "school" : schoolData
+                                "school" : schoolData,
+                                "kec" : kecData,
+                                "kel" : kelData
                             }
                         )
                     print(f"  ➥ [✓] {studentId}\t\tOK")
@@ -205,7 +225,7 @@ class MakeDataSet:
             for item in afterParsed:
                 afterAlleachBucket = {
                     "typeYear" : item["yearType"],
-                    "head" : ["id","name","gender","school"],
+                    "head" : ["id","name","gender","school","kec","kel"],
                     "data" : []
                 }
                 print()
