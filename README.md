@@ -43,20 +43,20 @@
 <!-- ABOUT THE PROJECT -->
 ## Tentang Project ini
 
-PPDBData merupakan suatu program yang saya buat menggunakan bahasa pemrograman python untuk mempermudah mengambil data terkait asal sekolah maupun gender dari siswa pada website ppdb,yang kemudian nantinya akan dibuatkan dataset dengan format json
+PPDBData merupakan suatu program yang saya buat menggunakan bahasa pemrograman python untuk mempermudah mengambil data terkait asal sekolah,gender,kecamatan, dan kelurahan dari siswa pada website ppdb yang kemudian nantinya akan dibuatkan dataset dengan format json ataupun csv
 
 Fitur pada program ini:
 * Request data ke website resmi ppdb untuk mendapatkan data sekolah yang diperlukan
 * Request data detail siswa pada tiap sekolah dan jurusan
 * Adanya log report bila terjadi error pada pengambilan data
-* Mengolah output hasil request dalam format JSON yang disimpan dalam folder dengan berdasarkan tahun data
-* Data yang dikeluarkan diformat dalam bentuk json dengan nama format file "jurusan-tahun".json
+* Mengolah output hasil request dalam format JSON atau csv yang disimpan dalam folder dengan berdasarkan tahun data
+* Data yang dikeluarkan diformat dalam bentuk json dengan nama format file "jurusan-sekolah-tahun".json
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Bagian ini akan mencakup cara pengoprasian program ini dimulai dari pencarian data (Pencarian data dilakukan manual telebih dahulu.update selanjutnya akan membuat program ini dapat membuat data secara otomatis),sampai format data yang dapat diterima
+Bagian ini akan mencakup cara pengoprasian program ini,dimulai dari pencarian data mengubah data di makeDS.py
 
 
 ### Instalasi - Buat data
