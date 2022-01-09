@@ -235,6 +235,16 @@ class MakeDataSet:
 
     def make(self,arg):
         try:
+            while True:
+                q = int(input("[?] choose data type ! \n  ➥ 1. json\n  ➥ 2. csv\n (1/2) : "))
+                if q == 1:
+                    self.fileType = "json"
+                    break
+                elif q == 2:
+                    self.fileType = "csv"
+                    break
+                else:
+                    print("[x] invalid option")
             tobeReturned = self.makeReqToApi(arg)
             print()
             self.logger()
@@ -252,16 +262,6 @@ class MakeDataSet:
 
                     makeFolderMain = str(input("[?] begin to make dataset (y/n) : "))
                     if makeFolderMain.lower() == "y":
-                        while True:
-                            q = int(input("[?] choose data type ! \n  ➥ 1. json\n  ➥ 2. csv\n (1/2) : "))
-                            if q == 1:
-                                self.fileType == "json"
-                                break
-                            elif q == 2:
-                                self.fileType == "csv"
-                                break
-                            else:
-                                print("[x] invalid option")
                         fdName = self.makeFolderMain("outputDataSet",0)
                         self.makeEachDataSet(tobeReturned,fdName)
                         break
@@ -271,7 +271,7 @@ class MakeDataSet:
                         print("[x] invalid option")
             return False
         except KeyboardInterrupt:
-            print("[x] Adios")
+            print("\n[x] Adios")
 
     # getter
     def logger(self):
