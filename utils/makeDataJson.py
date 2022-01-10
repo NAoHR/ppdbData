@@ -140,7 +140,7 @@ class MakeDataJson:
                 except ConnectionError:
                     print(f"  ➥ [x] failed to request {item['schoolName']} : Connection Err")
                 if r.status_code == 200:
-                    print(f"  ➥ [✓] success to request {item['schoolName']}")
+                    print(f"  ➥ [✓] success to request {item['schoolName']} - {subitem[1]}")
                     jsonBucket.append({
                         "api" : merged,
                         "vocType" : f"{subitem[1].replace(' ','-')}_{item['schoolName'].replace(' ','-')}"
