@@ -6,6 +6,10 @@ from requests.exceptions import ReadTimeout
 
 class MakeDataJson:    
     def __init__(self):
+        self.errorLog = {
+            "mainError" : [],
+            "subMainError" : []
+        }
         self.credFromCurrent = {
             "eachId" : [],
             "eachDataId" : []
@@ -110,45 +114,62 @@ class MakeDataJson:
             
             print(f"\n[O] {schoolData['yearType']}'s Section")
             r = requests.get(schoolData["link"],timeout=3)
-            jsoned = r.json()
-            for key,value in enumerate(jsoned):
-                print(f"  ➥ [{key+1}] . {value['nama']}")
-            chosen = loopQ(len(jsoned))
-            data = jsoned[chosen]
-            afterR = requests.get(schoolData["linkVoc"],timeout=3)
-
-            jsonedAfterR = afterR.json()
-            self.credFromCurrent["eachDataId"].append({
-                "schoolName" : data["nama"],
-                "id" : data["sekolah_id"],
-                "yearType" : schoolData["yearType"],
-                "pref" : schoolData["pref"],
-                "data" : jsonedAfterR[data["sekolah_id"]]
-            })
+            if r.status_code == 200:
+                jsoned = r.json()
+                for key,value in enumerate(jsoned):
+                    print(f"  ➥ [{key+1}] . {value['nama']}")
+                chosen = loopQ(len(jsoned))
+                data = jsoned[chosen]
+                afterR = requests.get(schoolData["linkVoc"],timeout=3)
+                jsonedAfterR = afterR.json()
+                self.credFromCurrent["eachDataId"].append({
+                    "schoolName" : data["nama"],
+                    "err" : False,
+                    "id" : data["sekolah_id"],
+                    "yearType" : schoolData["yearType"],
+                    "pref" : schoolData["pref"],
+                    "data" : jsonedAfterR[data["sekolah_id"]]
+                })
+            else:
+                self.credFromCurrent["eachDataId"].append({
+                    "schoolName" : data["nama"],
+                    "err" : True,
+                    "id" : data["sekolah_id"],
+                    "yearType" : schoolData["yearType"],
+                    "pref" : schoolData["pref"],
+                    "data" : jsonedAfterR[data["sekolah_id"]]
+                })
+                self.errorLog["MainError"].append({
+                    "cred" : f"{schoolData['yearType']}"
+                })
         except:
-            return False
-
+            print("")
     def __createEachJsonData(self):
         tobereturned = []
         for item in self.credFromCurrent["eachDataId"]:
-            print(f"[~] Begin to request {item['schoolName']}-{item['yearType']}")
-            jsonBucket = []
-            for subitem in item["data"]:
-                try:
-                    merged = f"{self.data['linkSchool'][item['yearType']]}{self.credFromCurrent['schoolType']}/{item['pref']}-{item['id']}-{subitem[0]}.json"
-                    r = requests.get(merged)
-                except ConnectionError:
-                    print(f"  ➥ [x] failed to request {item['schoolName']} : Connection Err")
-                if r.status_code == 200:
-                    print(f"  ➥ [✓] success to request {item['schoolName']} - {subitem[1]}")
-                    jsonBucket.append({
-                        "api" : merged,
-                        "vocType" : f"{subitem[1].replace(' ','-')}_{item['schoolName'].replace(' ','-')}"
-                    })
-            tobereturned.append({
-                "yearType" : item['yearType'],
-                "sourceDataLink" :  jsonBucket
-            })
+            if item["err"] == False:
+                print(f"[~] Begin to request {item['schoolName']}-{item['yearType']}")
+                jsonBucket = []
+                for subitem in item["data"]:
+                    try:
+                        merged = f"{self.data['linkSchool'][item['yearType']]}{self.credFromCurrent['schoolType']}/{item['pref']}-{item['id']}-{subitem[0]}.json"
+                        r = requests.get(merged,timeout=3)
+                        if r.status_code == 200:
+                            print(f"  ➥ [✓] success to request {item['schoolName']} - {subitem[1]}")
+                            jsonBucket.append({
+                                "api" : merged,
+                                "vocType" : f"{subitem[1].replace(' ','-')}_{item['schoolName'].replace(' ','-')}"
+                            })
+                        else:
+                            self.errorLog["subMainError"].append({
+                                "cred" : f"{item['schoolName']} - {subitem[1]} - {item['yearType']}"
+                            })
+                    except Exception as E:
+                        print(f"  ➥ [x] failed to request {item['schoolName']} : Connection Err")
+                tobereturned.append({
+                    "yearType" : item['yearType'],
+                    "sourceDataLink" :  jsonBucket
+                })
         return tobereturned
 
     def __createJsonFile(self,data,fileName="data_1"):
@@ -171,9 +192,24 @@ class MakeDataJson:
             if yesOrNo.lower() == "no":
                 print("Abort")
                 return False
-            print("zamn")
             return self.__createEachJsonData()
         
+    def __logError(self):
+        pre = "Cant Retrify"
+        def loop(data):
+            for item in data:
+                print(f"  ➥ [x] {pre} {item['cred']}")
+        print("\n[!] Error Log")
+        logNum = 0
+        if self.errorLog["mainError"]:
+            loop(self.errorLog["mainError"])
+            logNum += 1
+        elif self.errorLog["subMainError"]:
+            loop(self.errorLog["subMainError"])
+            logNum += 1
+        else:
+            print("  ➥ [✓] All Connection went Succes")
+        return logNum
 
     def make(self):
         try:
@@ -182,6 +218,21 @@ class MakeDataJson:
                     self.__requestFromChosenSchool(item)
                 bucket = self.__beginIfCredIsDone()
                 if bucket:
+                    err = self.__logError()
+                    if err > 0:
+                        def askE():
+                            askEr = str(input("\nError(s) occured, Do you really want to proccess (y/n) : "))
+                            if askEr == "y" or askEr == "n":
+                                return askEr
+                            else:
+                                print("[x] invalid Input")
+                                return askE()
+                        answer = askE()
+                        if answer == "n":
+                            return False
+                        else:
+                            ask = str(input("\n[?] fileName (default: data1) : "))
+                            return self.__createJsonFile(bucket,fileName=ask)        
                     ask = str(input("\n[?] fileName (default: data1) : "))
                     return self.__createJsonFile(bucket,fileName=ask)
         except KeyboardInterrupt:
