@@ -132,12 +132,12 @@ class MakeDataJson:
                 })
             else:
                 self.credFromCurrent["eachDataId"].append({
-                    "schoolName" : data["nama"],
+                    "schoolName" : False,
                     "err" : True,
-                    "id" : data["sekolah_id"],
+                    "id" : False,
                     "yearType" : schoolData["yearType"],
                     "pref" : schoolData["pref"],
-                    "data" : jsonedAfterR[data["sekolah_id"]]
+                    "data" : []
                 })
                 self.errorLog["MainError"].append({
                     "cred" : f"{schoolData['yearType']}"
